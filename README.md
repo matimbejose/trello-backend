@@ -1,7 +1,6 @@
 ## Trello backend
 Bem-vindo ao repositório back-end do Trello.
 
-
 ## Tecnologias usadas
 
 - Docker e docker compose
@@ -36,7 +35,7 @@ composer install
 php artisan key:generate
 ```
 
-## Faca a migration das tabelas 
+## Faça a migration das tabelas 
 ```sh
 php artisan migration
 ```
