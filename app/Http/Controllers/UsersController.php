@@ -12,33 +12,77 @@ use Illuminate\Support\Facades\Auth;
 class UsersController extends Controller
 {
 
+    /**
+     * Send json response from API
+     *
+     * @return \Illuminate\Http\Response
+     */
     private function sendResponse($data, $message = null, $status = 200)
     {
         $response = [
-            'data' => $data,
+            'status' => $status,
             'message' => $message,
-            'status' => $status
+            'data' => $data
         ];
 
         return response()->json($response, $status);
     }
 
 
+    /**
+     * Send API json response in case of error.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    private function sendError($error, $errorMessages = [], $status = 404)
+    {
+        $response = [
+            'status' => $status,
+            'message' => $error,
+        ];
 
+        if (!empty($errorMessages)) {
+            $response['errors'] = $errorMessages;
+        }
+
+        return response()->json($response, $status);
+    }
+
+
+    /**
+     * Login the user.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function login(Request $request)
     {
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $user = Auth::user();
-            $success['token'] =  $user->createToken('MyApp')->accessToken;
-            $success['name'] =  $user->name;
+            $success['token'] = $user->createToken('MyApp')->accessToken;
+            $success['name'] = $user->name;
 
-
-            return $this->sendResponse($success, 'User login successfully.');
+            return $this->sendResponse($success, 'Login do usuário com sucesso.');
         } else {
-            return $this->sendResponse('Unauthorised.', ['error' => 'Unauthorised']);
+            return $this->sendError('Não autorizado.', ['error' => 'Não autorizado'], 401);
         }
     }
 
+
+    /**
+     * Disconnect user.
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+    public function logout()
+    {
+        if (Auth::check()) {
+            Auth::user()->token()->revoke();
+            return $this->sendResponse([], 'Usuário desconectado com sucesso');
+        } else {
+            return $this->sendError('Não autorizado.', ['error' => 'Não autorizado'], 401);
+        }
+    }
 
 
 
@@ -70,7 +114,7 @@ class UsersController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        // Criar o usuário
+        /// Create the user
         $user = new User([
             'name' => $request->name,
             'email' => $request->email,
@@ -78,7 +122,7 @@ class UsersController extends Controller
         ]);
 
         if ($user->save()) {
-            // Gerar o token de acesso OAuth2 usando Laravel Passport
+            // Generate OAuth2 access token using Laravel Passport
             $token = $user->createToken('API Token')->accessToken;
 
             return $this->sendResponse([
@@ -86,10 +130,10 @@ class UsersController extends Controller
                 'access_token' => $token
             ], 'User created successfully', 201);
         } else {
-            return $this->sendResponse(null, 'Failed to create user', 500);
-            dd("mais um teste");
+            return $this->sendError('Failed to create user', [], 500);
         }
     }
+
 
     /**
      * Display the specified resource.

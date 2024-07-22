@@ -7,21 +7,30 @@ use App\Http\Requests\UpdateTaskRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
 
-
 class TasksController extends Controller
 {
+    private function sendResponse($data, $message = null, $status = 200)
+    {
+        $response = [
+            'status' => $status,
+            'message' => $message,
+            'data' => $data
+        ];
+
+        return response()->json($response, $status);
+    }
 
     /**
-     * Filter tasks by statusFilter tasks by status
+     * Filter tasks by status
      *
+     * @param string $status
      * @return \Illuminate\Http\Response
      */
     public function filterByStatus($status)
     {
         $tasks = Task::where('status', $status)->get();
-        return TaskResource::collection($tasks);
+        return $this->sendResponse(TaskResource::collection($tasks), 'Tarefas recuperadas com sucesso.');
     }
-
 
     /**
      * Display a listing of the resource.
@@ -30,17 +39,8 @@ class TasksController extends Controller
      */
     public function index()
     {
-        return TaskResource::collection(Task::all());
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $tasks = Task::all();
+        return $this->sendResponse(TaskResource::collection($tasks), 'Tarefas recuperadas com sucesso.');
     }
 
     /**
@@ -52,8 +52,7 @@ class TasksController extends Controller
     public function store(StoreTaskRequest $request)
     {
         $task = Task::create($request->validated());
-
-        return new TaskResource($task);
+        return $this->sendResponse(new TaskResource($task), 'Tarefa criada com sucesso.', 201);
     }
 
     /**
@@ -64,18 +63,7 @@ class TasksController extends Controller
      */
     public function show(Task $task)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Task $task)
-    {
-        //
+        return $this->sendResponse(new TaskResource($task), 'Tarefas recuperadas com sucesso.');
     }
 
     /**
@@ -87,10 +75,8 @@ class TasksController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        //
         $task->update($request->validated());
-
-        return new TaskResource($task);
+        return $this->sendResponse(new TaskResource($task), 'Tarefa atualizada com sucesso.');
     }
 
     /**
@@ -102,6 +88,6 @@ class TasksController extends Controller
     public function destroy(Task $task)
     {
         $task->delete();
-        return response()->json(['message' => 'Task deleted successfully'], 204);
+        return $this->sendResponse(null, 'Tarefa excluída com sucesso.', 204);
     }
 }

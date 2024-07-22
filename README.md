@@ -1,33 +1,32 @@
-## ARQUIVO .ENV
-APP_NAME="LaravelTrello"
-APP_URL=http://localhost:8989
+## Trello backend
+Bem-vindo ao repositório back-end do Trello.
 
-DB_CONNECTION=mysql
-DB_HOST=db
-DB_PORT=3306
-DB_DATABASE=laravel
-DB_USERNAME=root
-DB_PASSWORD=root
 
-CACHE_DRIVER=redis
-QUEUE_CONNECTION=redis
-SESSION_DRIVER=redis
+## Tecnologias usadas
 
-REDIS_HOST=redis
-REDIS_PASSWORD=null
-REDIS_PORT=6379
+- Docker e docker compose
+- php: 8.0
+- laravel: 8.75
+- laravel passport: 10.4
+
+## Primeiros passos
+
+- 1- Renomeia o arquivo `.env.exmplate`  para  `.env`
+- 2- Modifique o arquivo de acordo com suas necessidas
+- 3- Modifique os arquivos `Dockerfile` e `docker-compose` de acordo com suas necessidas
+
 
 ## Suba os containers do projeto
 ```sh
 docker-compose up -d
 ```
 
-## Acessar o container
+## Acessar o container app 
 ```sh
 docker-compose exec app bash
 ```
 
-## Instalar as dependÃªncias do projeto
+## Instalar as dependências do projeto
 ```sh
 composer install
 ```
@@ -37,5 +36,17 @@ composer install
 php artisan key:generate
 ```
 
-## Acessar o projeto
-[http://localhost:8989](http://localhost:8989)
+## Faca a migration das tabelas 
+```sh
+php artisan migration
+```
+
+## Gerar a key do laravel passport
+```sh
+php artisan passport:install
+```
+
+## Acesse a documentação completa da API
+[documentação](https://documenter.getpostman.com/view/27788691/2sA3kVjM1t)
+
+
