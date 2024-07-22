@@ -37,7 +37,7 @@ php artisan key:generate
 
 ## Faça a migration das tabelas 
 ```sh
-php artisan migration
+php artisan migrate:fresh
 ```
 
 ## Gerar a key do laravel passport
